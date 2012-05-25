@@ -94,8 +94,7 @@ class Pdftk
         fdf_data_new[key1][key2] = value
 
       else # no dot
-        if fdf_data_new.include? key1 &&
-           fdf_data_new[key1].class == Array
+        if fdf_data_new[key1].class == Array
           # this key collides with an existing array; this shouldn't happen;
           # associate string value with the special empty key in array, anyhow;
 
