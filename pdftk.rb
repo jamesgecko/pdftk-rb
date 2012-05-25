@@ -55,7 +55,7 @@ class Pdftk
     result = ''
 
     pdf_string.each do |char|
-      case char[0].ord
+      case ord(char)
       when 0x28 || 0x29 || 0x5c # open paren, close paren, backslash
         backslash = 0x5c.chr
         result << backslash << char # escape the character w/ backslash
@@ -73,7 +73,7 @@ class Pdftk
     result = ''
 
     pdf_name.each do |char|
-      case char[0].ord
+      case ord(char)
       when 33...126 || 0x23 # hash mark
         result << char
       else
