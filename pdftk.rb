@@ -25,10 +25,10 @@ class Pdftk
     fdf << "/Fields [ " # open the form Fields array
 
     fdf_data_strings = burst_dots_into_arrays( fdf_data_strings )
-    forge_fdf_fields_strings(fdf, fdf_data_strings, fields_hidden, fields_readonly)
+    forge_fdf_fields(fdf, fdf_data_strings, fields_hidden, fields_readonly, '', :string)
 
     fdf_data_names = burst_dots_into_arrays( fdf_data_names )
-    forge_fdf_fields_names(fdf, fdf_data_names, fields_hidden, fields_readonly)
+    forge_fdf_fields(fdf, fdf_data_names, fields_hidden, fields_readonly, '', :name)
 
     fdf << "] \x0d" # close the Fields array
 
@@ -139,11 +139,13 @@ class Pdftk
   end
 
   def forge_fdf_fields(fdf, fdf_data, fields_hidden, fields_readonly,
-    accumulated_name, strings_b) # true <==> $fdf_data contains string data
-     #
-     # string data is used for text fields, combo boxes and list boxes;
-     # name data is used for checkboxes and radio buttons, and
-     # /Yes and /Off are commonly used for true and false
+    accumulated_name, fdf_data_type)
+    # if fdf_data_type contains :string, fdf_data contains string data
+    # if fdf_data_type contains :name, fdf_data contains name data
+    #
+    # string data is used for text fields, combo boxes and list boxes;
+    # name data is used for checkboxes and radio buttons, and
+    # /Yes and /Off are commonly used for true and false
 
     accumulated_name << '.' if accumulated_name.length > 0 # append period seperator
 
@@ -158,7 +160,7 @@ class Pdftk
 
         # recurse
         forge_fdf_fields(fdf, value, fields_hidden, fields_readonly,
-          accumulated_name + key.to_s, strings_b)
+          accumulated_name + key.to_s, fdf_data_type)
 
         fdf << "] " # close Kids array
       else
@@ -166,9 +168,9 @@ class Pdftk
         fdf << "/T (#{ escape_pdf_string(key.to_s) }) "
 
         # field value
-        if strings_b # string
+        if fdf_data_type == :string
           fdf << "/V (#{ escape_pdf_string(value.to_s) }) "
-        else # name
+        else # :name
           fdf << "/V /#{ escape_pdf_name(value.to_s) } "
         end
 
@@ -176,10 +178,10 @@ class Pdftk
         forge_fdf_fields_flags(fdf,
               accumulated_name + key.to_s,
               fields_hidden,
-              fields_readonly )
+              fields_readonly)
       end
       fdf << ">> \x0d" # close dictionary
-      
+
     end
   end
 end
