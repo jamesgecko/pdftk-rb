@@ -69,5 +69,52 @@ class Pdftk
     result
   end
 
+  # In PDF, partial form field names are combined using periods to
+  # yield the full form field name; we'll take these dot-delimited
+  # names and then expand them into nested arrays, here; takes
+  # an array that uses dot-delimited names and returns a tree of arrays;
+  #
+  def burst_dots_into_arrays(fdf_data_old)
+    fdf_data_new = []
+
+    fdf_data_old.each do |key, value|
+      key_split = key.to_s.split('.', 2)
+
+      if key_split.count == 2 # handle dot
+        if !fdf_data_new.include? key_split[0].to_s
+          fdf_data_new[key_split[0].to_s) ] = []
+        end
+
+        if fdf_data_new[key_split[0].to_s].class != Array
+          # this new key collides with an existing name; this shouldn't happen;
+          # associate string value with the special empty key in array, anyhow;
+
+          fdf_data_new[key_split[0].to_s] = 
+            { '' => fdf_data_new[key_split[0].to_s)] }
+        end
+
+        fdf_data_new[key_split[0].to_s][key_split[1].to_s] = value
+
+      else # no dot
+        if fdf_data_new.include? key_split[0].to_s &&
+           fdf_data_new[key_split[0].to_s].class == Array
+          # this key collides with an existing array; this shouldn't happen;
+          # associate string value with the special empty key in array, anyhow;
+
+          fdf_data_new[key.to_s][''] = value
+
+        else # simply copy
+          fdf_data_new[key.to_s] = value
+      end
+    end
+
+    fdf_data_new.each do |key, value|
+      if value.class == Array
+        fdf_data_new[key.to_s] = burst_dots_into_arrays(value) # recurse
+      end
+    end
+
+    return fdf_data_new
+  end
 
 end
