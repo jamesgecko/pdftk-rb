@@ -84,7 +84,7 @@ class Pdftk
           fdf_data_new[key1] = []
         end
 
-        if fdf_data_new[key1].class != Array
+        if fdf_data_new[key1].class != Hash
           # this new key collides with an existing name; this shouldn't happen;
           # associate string value with the special empty key in array, anyhow;
 
@@ -94,7 +94,7 @@ class Pdftk
         fdf_data_new[key1][key2] = value
 
       else # no dot
-        if fdf_data_new[key1].class == Array
+        if fdf_data_new[key1].class == Hash
           # this key collides with an existing array; this shouldn't happen;
           # associate string value with the special empty key in array, anyhow;
 
@@ -107,7 +107,7 @@ class Pdftk
     end
 
     fdf_data_new.each do |key, value|
-      if value.class == Array
+      if value.class == Hash
         fdf_data_new[key] = burst_dots_into_arrays(value) # recurse
       end
     end
@@ -138,7 +138,7 @@ class Pdftk
 
       fdf << "<< " # open dictionary
 
-      if value.class == Array # parent; recurse
+      if value.class == Hash # parent; recurse
         fdf << "/T (" + escape_pdf_string(key.to_s) + ") " # partial field name
         fdf << "/Kids [ "                                  # open Kids array
 
