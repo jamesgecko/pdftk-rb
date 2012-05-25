@@ -152,10 +152,13 @@ class Pdftk
         fdf << "/T (#{ escape_pdf_string(key.to_s) }) "
 
         # field value
-        if fdf_data_type == :string
+        case fdf_data_type
+        when :string
           fdf << "/V (#{ escape_pdf_string(value.to_s) }) "
-        else # :name
+        when :name
           fdf << "/V /#{ escape_pdf_name(value.to_s) } "
+        else
+          raise "Invalid fdf_data_type value"
         end
 
         # field flags
