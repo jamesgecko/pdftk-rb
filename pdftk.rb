@@ -60,9 +60,9 @@ class Pdftk
         backslash = 0x5c.chr
         result << backslash << char # escape the character w/ backslash
       when 32...126
-        result << sprintf( "\\%03o", ord(char) ) # use an octal code
-      else
         result << char
+      else
+        result << sprintf( "\\%03o", ord(char) ) # use an octal code
       end
     end
 
