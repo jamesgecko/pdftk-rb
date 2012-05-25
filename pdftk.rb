@@ -14,10 +14,10 @@ class Pdftk
     # forge_fdf, by Sid Steward
     # version 1.1
     # visit: www.pdfhacks.com/forge_fdf/
-    # 
+    #
     # PDF can be particular about CR and LF characters, so I spelled them out 
     # in hex: CR == \x0d : LF == \x0a
-     
+
 
     fdf = "%FDF-1.2\x0d%\xe2\xe3\xcf\xd3\x0d\x0a" # header
     fdf << "1 0 obj\x0d<< " # open the Root dictionary
@@ -92,39 +92,38 @@ class Pdftk
     fdf_data_new = []
 
     fdf_data_old.each do |key, value|
-      key_split = key.to_s.split('.', 2)
+      key1, key2 = key.to_s.split('.', 2)
 
       if key_split.count == 2 # handle dot
-        if !fdf_data_new.include? key_split[0].to_s
-          fdf_data_new[key_split[0].to_s) ] = []
+        if !fdf_data_new.include? key1
+          fdf_data_new[key1] = []
         end
 
-        if fdf_data_new[key_split[0].to_s].class != Array
+        if fdf_data_new[key1].class != Array
           # this new key collides with an existing name; this shouldn't happen;
           # associate string value with the special empty key in array, anyhow;
 
-          fdf_data_new[key_split[0].to_s] = 
-            { '' => fdf_data_new[key_split[0].to_s)] }
+          fdf_data_new[key1] = { '' => fdf_data_new[key1] }
         end
 
-        fdf_data_new[key_split[0].to_s][key_split[1].to_s] = value
+        fdf_data_new[key1][key2] = value
 
       else # no dot
-        if fdf_data_new.include? key_split[0].to_s &&
-           fdf_data_new[key_split[0].to_s].class == Array
+        if fdf_data_new.include? key1 &&
+           fdf_data_new[key1].class == Array
           # this key collides with an existing array; this shouldn't happen;
           # associate string value with the special empty key in array, anyhow;
 
-          fdf_data_new[key.to_s][''] = value
+          fdf_data_new[key][''] = value
 
         else # simply copy
-          fdf_data_new[key.to_s] = value
+          fdf_data_new[key] = value
       end
     end
 
     fdf_data_new.each do |key, value|
       if value.class == Array
-        fdf_data_new[key.to_s] = burst_dots_into_arrays(value) # recurse
+        fdf_data_new[key] = burst_dots_into_arrays(value) # recurse
       end
     end
 
