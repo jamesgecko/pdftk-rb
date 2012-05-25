@@ -25,10 +25,10 @@ class Pdftk
     fdf << "/Fields [ " # open the form Fields array
 
     fdf_data_strings = burst_dots_into_arrays( fdf_data_strings )
-    forge_fdf_fields(fdf, fdf_data_strings, fields_hidden, fields_readonly, '', :string)
+    forge_fdf_fields(fdf, fdf_data_strings, fields_hidden, fields_readonly, :string)
 
     fdf_data_names = burst_dots_into_arrays( fdf_data_names )
-    forge_fdf_fields(fdf, fdf_data_names, fields_hidden, fields_readonly, '', :name)
+    forge_fdf_fields(fdf, fdf_data_names, fields_hidden, fields_readonly, :name)
 
     fdf << "] \x0d" # close the Fields array
 
@@ -139,7 +139,7 @@ class Pdftk
   end
 
   def forge_fdf_fields(fdf, fdf_data, fields_hidden, fields_readonly,
-    accumulated_name, fdf_data_type)
+    fdf_data_type, accumulated_name='')
     # if fdf_data_type contains :string, fdf_data contains string data
     # if fdf_data_type contains :name, fdf_data contains name data
     #
@@ -160,7 +160,7 @@ class Pdftk
 
         # recurse
         forge_fdf_fields(fdf, value, fields_hidden, fields_readonly,
-          accumulated_name + key.to_s, fdf_data_type)
+          fdf_data_type, accumulated_name + key.to_s)
 
         fdf << "] " # close Kids array
       else
