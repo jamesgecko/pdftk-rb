@@ -103,6 +103,7 @@ class Pdftk
 
         else # simply copy
           fdf_data_new[key] = value
+        end
       end
     end
 
