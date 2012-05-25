@@ -73,11 +73,13 @@ class Pdftk
     result = ''
 
     pdf_name.each do |char|
-      if ord(char) < 33 || 126 < ord(char) || ord(char) == 0x23 # hash mark
-        result << sprintf("#%02x", ord(char)) # use a hex code
-      else
+      case char[0].ord
+      when 33...126 || 0x23 # hash mark
         result << char
+      else
+        result << sprintf("#%02x", ord(char)) # use a hex code
       end
+    end
     return result
   end 
 
