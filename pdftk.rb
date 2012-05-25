@@ -138,4 +138,48 @@ class Pdftk
     fdf << fields_readonly.includes(field_name) ? "#{set} 1 " : "#{clear} 1 "
   end
 
+  def forge_fdf_fields(fdf, fdf_data, fields_hidden, fields_readonly,
+    accumulated_name, strings_b) # true <==> $fdf_data contains string data
+     #
+     # string data is used for text fields, combo boxes and list boxes;
+     # name data is used for checkboxes and radio buttons, and
+     # /Yes and /Off are commonly used for true and false
+
+    accumulated_name << '.' if accumulated_name.length > 0 # append period seperator
+
+    fdf_data.each do |key, value|
+      # we use string casts to prevent numeric strings from being silently converted to numbers
+
+      fdf << "<< " # open dictionary
+
+      if value.class == Array # parent; recurse
+        fdf << "/T (" + escape_pdf_string(key.to_s) + ") " # partial field name
+        fdf << "/Kids [ "                                  # open Kids array
+
+        # recurse
+        forge_fdf_fields(fdf, value, fields_hidden, fields_readonly,
+          accumulated_name + key.to_s, strings_b)
+
+        fdf << "] " # close Kids array
+      else
+        # field name
+        fdf << "/T (#{ escape_pdf_string(key.to_s) }) "
+
+        # field value
+        if strings_b # string
+          fdf << "/V (#{ escape_pdf_string(value.to_s) }) "
+        else # name
+          fdf << "/V /#{ escape_pdf_name(value.to_s) } "
+        end
+
+        # field flags
+        forge_fdf_fields_flags(fdf,
+              accumulated_name + key.to_s,
+              fields_hidden,
+              fields_readonly )
+      end
+      fdf << ">> \x0d" # close dictionary
+      
+    end
+  end
 end
