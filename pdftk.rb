@@ -69,6 +69,18 @@ class Pdftk
     result
   end
 
+  def escape_pdf_name(pdf_name)
+    result = ''
+
+    pdf_name.each do |char|
+      if ord(char) < 33 || 126 < ord(char) || ord(char) == 0x23 # hash mark
+        result << sprintf("#%02x", ord(char)) # use a hex code
+      else
+        result << char
+      end
+    return result
+  end 
+
   # In PDF, partial form field names are combined using periods to
   # yield the full form field name; we'll take these dot-delimited
   # names and then expand them into nested arrays, here; takes
