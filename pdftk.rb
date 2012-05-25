@@ -117,4 +117,11 @@ class Pdftk
     return fdf_data_new
   end
 
+  def forge_fdf_fields_flags(fdf, field_name, fields_hidden, fields_readonly)
+    set = "/SetFf"
+    clear = "/ClrFf"
+    fdf << fields_hidden.includes(field_name) ? "#{set} 2 " : "#{clear} 2 "
+    fdf << fields_readonly.includes(field_name) ? "#{set} 1 " : "#{clear} 1 "
+  end
+
 end
